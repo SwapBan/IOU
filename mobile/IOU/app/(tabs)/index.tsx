@@ -38,6 +38,26 @@ export default function HomeScreen() {
       setImage(result.assets[0].uri);
     }
   };
+  const uploadImage = async () => {
+    if (!image) return;
+
+    const formData = new FormData();
+    formData.append('photo', { uri: image, name: 'upload.jpg', type: 'image/jpeg' } as any);
+
+    try {
+      
+      const res = await fetch('http://192.168.1.58:5001/upload', {
+        method: 'POST',
+        body: formData,
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      const data = await res.json();
+      Alert.alert('Upload Result', JSON.stringify(data));
+    } catch (err) {
+      console.log(err);
+      Alert.alert('Error', 'Failed to upload image');
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -56,7 +76,11 @@ export default function HomeScreen() {
       {image && (
         <View style={styles.imageContainer}>
           <Image source={{ uri: image }} style={styles.image} />
+          <TouchableOpacity style={[styles.button, { marginTop: 20 }]} onPress={uploadImage}>
+            <Text style={styles.buttonText}>Upload Image</Text>
+          </TouchableOpacity>
         </View>
+        
       )}
     </SafeAreaView>
   );
@@ -65,7 +89,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff', // ensures white background instead of black
+    backgroundColor: '#fff', 
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
