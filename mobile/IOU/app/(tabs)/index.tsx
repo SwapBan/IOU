@@ -49,9 +49,17 @@ export default function HomeScreen() {
       const res = await fetch('http://192.168.1.58:5001/upload', {
         method: 'POST',
         body: formData,
-        headers: { 'Content-Type': 'multipart/form-data' },
+
       });
+      if (!res.ok) {
+        const errText = await res.text();
+        console.log("❌ Server error:", errText);
+        Alert.alert("Upload failed", errText);
+        return;
+      }
       const data = await res.json();
+      console.log("✅ Upload success:", data);
+
       Alert.alert('Upload Result', JSON.stringify(data));
     } catch (err) {
       console.log(err);
