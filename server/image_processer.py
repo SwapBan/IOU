@@ -1,14 +1,41 @@
 import os
 import easyocr
+from pymongo import MongoClient
+from datetime import datetime
+from dotenv import load_dotenv
+from fastapi import FastAPI, File, UploadFile
+from fastapi.responses import JSONResponse
 
-# Path to the uploads folder
-uploads_folder = os.path.join("..", "backend", "uploads")
+app = FastAPI()
+load_dotenv()
 
-# Initialize EasyOCR reader
+mongo_uri = os.getenv("MONGO_URI")
+client = MongoClient(mongo_uri)
+db = client["image_process_db"]
+collection = db["processed_texts"]
+
 reader = easyocr.Reader(['en'])
 
-# Example: Read a specific image from the uploads folder
-image_name = "bill.jpg"  # Replace with the name of your image
-image_path = os.path.join(uploads_folder, image_name)
-result = reader.readtext(image_path, detail=0)
-print(result)
+@app.post("/process/")
+async def upload_image(file: UploadFile = File(...)):
+    # Save uploaded file temporarily
+    temp_path = f"/tmp/{file.filename}"
+    with open(temp_path, "wb") as f:
+        f.write(await file.read())
+
+    # Run OCR
+    result = reader.readtext(temp_path, detail=0)
+
+    # Store in MongoDB
+    document = {
+        "image_name": file.filename,
+        "extracted_text": result,
+        "timestamp": datetime.utcnow()
+    }
+    collection.insert_one(document)
+
+    # Remove temporary file
+    os.remove(temp_path)
+
+    # Return result
+    return JSONResponse({"filename": file.filename, "text": result})

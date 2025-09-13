@@ -46,19 +46,19 @@ export default function HomeScreen() {
 
     try {
       
-      const res = await fetch('http://192.168.1.58:5001/upload', {
+      const res = await fetch('http://10.207.56.157:5001/upload', {
         method: 'POST',
         body: formData,
 
       });
       if (!res.ok) {
         const errText = await res.text();
-        console.log("❌ Server error:", errText);
+        console.log("Server error:", errText);
         Alert.alert("Upload failed", errText);
         return;
       }
       const data = await res.json();
-      console.log("✅ Upload success:", data);
+      console.log("Upload success:", data);
 
       Alert.alert('Upload Result', JSON.stringify(data));
     } catch (err) {

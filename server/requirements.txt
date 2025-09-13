@@ -2,3 +2,7 @@ torch
 torchvision
 easyocr
 numpy<2.0
+pymongo
+uvicorn
+fastapi
+python-multipart
