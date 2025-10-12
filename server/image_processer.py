@@ -1,5 +1,6 @@
 import os
 import easyocr
+import uvicorn
 from pymongo import MongoClient
 from datetime import datetime
 from dotenv import load_dotenv
@@ -16,7 +17,7 @@ collection = db["processed_texts"]
 
 reader = easyocr.Reader(['en'])
 
-@app.post("/process/")
+@app.post("/process")
 async def upload_image(file: UploadFile = File(...)):
     # Save uploaded file temporarily
     temp_path = f"/tmp/{file.filename}"
@@ -39,3 +40,9 @@ async def upload_image(file: UploadFile = File(...)):
 
     # Return result
     return JSONResponse({"filename": file.filename, "text": result})
+
+# python
+if __name__ == "__main__":
+    
+    port = int(os.getenv("PORT", "5002"))
+    uvicorn.run("image_processer:app", host="0.0.0.0", port=port, reload=True)

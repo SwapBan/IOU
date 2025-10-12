@@ -2,6 +2,8 @@ const express = require('express');
 const multer = require('multer');
 const cors = require('cors');
 const fs = require('fs');
+//const axios = require('axios');
+//const FormData = require('form-data');
 
 const app = express();
 app.use(cors());
@@ -26,13 +28,14 @@ app.get('/', (req, res) => {
 
 app.post('/upload', upload.single('photo'), async(req, res) => {
   console.log('File received:', req.file);
-  res.json({ message: 'File uploaded successfully!', file: req.file });
+  //res.json({ message: 'File uploaded successfully!', file: req.file });
   try {
     const formData = new FormData();
     formData.append("file", fs.createReadStream(req.file.path));
     const response = await fetch("http://localhost:5002/process", {
       method: "POST",
-      body: formData,
+      body: formData
+      //headers: formData.getHeaders()
     });
     const data = await response.json();
     res.json(data);

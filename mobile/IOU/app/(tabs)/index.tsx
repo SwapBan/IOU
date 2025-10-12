@@ -46,7 +46,7 @@ export default function HomeScreen() {
 
     try {
       
-      const res = await fetch('http://10.207.56.157:5001/upload', {
+      const res = await fetch('http://10.207.2.238:5001/upload', {
         method: 'POST',
         body: formData,
 
