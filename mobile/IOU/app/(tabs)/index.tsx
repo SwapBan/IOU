@@ -46,7 +46,7 @@ export default function HomeScreen() {
 
     try {
       
-      const res = await fetch('http://10.207.2.238:5001/upload', {
+      const res = await fetch('https://bill-backend.onrender.com/upload', {
         method: 'POST',
         body: formData,
 
