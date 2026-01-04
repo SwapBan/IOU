@@ -46,7 +46,7 @@ export default function HomeScreen() {
 
     try {
       
-      const res = await fetch('https://bill-backend.onrender.com/upload', {
+      const res = await fetch('https://iou-cav5.onrender.com/upload', {
         method: 'POST',
         body: formData,
 
