@@ -15,7 +15,14 @@ client = MongoClient(mongo_uri)
 db = client["image_process_db"]
 collection = db["processed_texts"]
 
-reader = easyocr.Reader(['en'])
+# Lazy-load the OCR reader on first use to save memory during startup
+reader = None
+
+def get_reader():
+    global reader
+    if reader is None:
+        reader = easyocr.Reader(['en'])
+    return reader
 
 @app.post("/process")
 async def upload_image(file: UploadFile = File(...)):
@@ -24,8 +31,11 @@ async def upload_image(file: UploadFile = File(...)):
     with open(temp_path, "wb") as f:
         f.write(await file.read())
 
+    # Get OCR reader (lazy-loaded on first use)
+    ocr_reader = get_reader()
+
     # Run OCR
-    result = reader.readtext(temp_path, detail=0)
+    result = ocr_reader.readtext(temp_path, detail=0)
 
     # Store in MongoDB
     document = {
