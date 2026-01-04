@@ -6,3 +6,4 @@ pymongo
 uvicorn
 fastapi
 python-multipart
+python-dotenv
