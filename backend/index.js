@@ -32,7 +32,8 @@ app.post('/upload', upload.single('photo'), async(req, res) => {
   try {
     const formData = new FormData();
     formData.append("file", fs.createReadStream(req.file.path));
-    const response = await fetch("http://localhost:5002/process", {
+    const FASTAPI_URL = process.env.FASTAPI_URL || "http://localhost:5002/process";
+    const response = await fetch(FASTAPI_URL, {
       method: "POST",
       body: formData
       //headers: formData.getHeaders()
