@@ -3,6 +3,7 @@ const multer = require('multer');
 const cors = require('cors');
 const fs = require('fs');
 const FormData = require('form-data');
+const axios = require('axios');
 
 const app = express();
 app.use(cors());
@@ -32,17 +33,14 @@ app.post('/upload', upload.single('photo'), async(req, res) => {
     const formData = new FormData();
     formData.append("file", fs.createReadStream(req.file.path));
     const FASTAPI_URL = process.env.FASTAPI_URL || "http://localhost:5002/process";
-    const response = await fetch(FASTAPI_URL, {
-      method: "POST",
-      body: formData,
+    const response = await axios.post(FASTAPI_URL, formData, {
       headers: formData.getHeaders()
     });
-    const data = await response.json();
-    res.json(data);
+    res.json(response.data);
   }
   catch (error) {
     console.error('Error processing file:', error);
-    res.status(500).json({ message: 'Error processing file', error });
+    res.status(500).json({ message: 'Error processing file', error: error.message });
   }
 });
 
