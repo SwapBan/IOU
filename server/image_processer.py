@@ -15,13 +15,19 @@ client = MongoClient(mongo_uri)
 db = client["image_process_db"]
 collection = db["processed_texts"]
 
+# Set model directory to /tmp which persists during service lifetime
+MODEL_DIR = os.getenv("EASYOCR_MODEL_DIR", "/tmp/.EasyOCR")
+os.makedirs(MODEL_DIR, exist_ok=True)
+
 # Lazy-load the OCR reader on first use to save memory during startup
 reader = None
 
 def get_reader():
     global reader
     if reader is None:
-        reader = easyocr.Reader(['en'])
+        print(f"Initializing EasyOCR with model directory: {MODEL_DIR}")
+        reader = easyocr.Reader(['en'], model_storage_directory=MODEL_DIR, download_enabled=True)
+        print("EasyOCR initialization complete")
     return reader
 
 @app.post("/process")
