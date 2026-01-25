@@ -34,8 +34,8 @@ app.post('/upload', upload.single('photo'), async(req, res) => {
     const FASTAPI_URL = process.env.FASTAPI_URL || "http://localhost:5002/process";
     const response = await fetch(FASTAPI_URL, {
       method: "POST",
-      body: formData
-      //headers: formData.getHeaders()
+      body: formData,
+      headers: formData.getHeaders()
     });
     const data = await response.json();
     res.json(data);
